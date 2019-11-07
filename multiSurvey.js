@@ -19,9 +19,7 @@ function loadScript() {
   ];
   //this will tally up the score
   let index = 0;
-  function startQuiz() {
-    startButton.hidden = true;
-    nextButton.hidden = false;
+  function drawQuestion() {
     const question = questions[index];
     const questionContainer = document.querySelector(".question");
     //clear old questions
@@ -32,6 +30,10 @@ function loadScript() {
     //clear old answers
     Array.from(answerContainer.children).forEach(child => child.remove());
     const answers = question.answers;
+    drawAnswers(answers);
+  }
+  function drawAnswers(answers) {
+    const answerContainer = document.querySelector(".answers");
     //this (below) draws the answers
     answers.forEach(a => {
       const container = document.createElement("div");
@@ -45,10 +47,45 @@ function loadScript() {
       answerContainer.appendChild(container);
     });
   }
-  startButton.addEventListener("click", startQuiz);
+
+  startButton.addEventListener("click", () => {
+    startButton.hidden = true;
+    nextButton.hidden = false;
+    drawQuestion();
+  });
+
   nextButton.addEventListener("click", () => {
     index++;
-    startQuiz();
+    if (index > 0 && index < questions.length - 1) {
+      backButton.hidden = false;
+    }
+
+    if (index === questions.length - 1) {
+      nextButton.hidden = true;
+      submitButton.hidden = false;
+    }
+    drawQuestion();
+  });
+
+  backButton.addEventListener("click", () => {
+    index--;
+    if (index === 0) {
+      backButton.hidden = true;
+      submitButton.hidden = true;
+      nextButton.hidden = false;
+    }
+    if (index > 0 && index < questions.length - 1) {
+      backButton.hidden = false;
+      submitButton.hidden = true;
+      nextButton.hidden = false;
+    }
+
+    if (index === questions.length - 1) {
+      nextButton.hidden = true;
+      backButton.hidden = false;
+      submitButton.hidden = false;
+    }
+    drawQuestion();
   });
 }
 document.addEventListener("DOMContentLoaded", loadScript);
