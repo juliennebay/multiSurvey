@@ -11,20 +11,27 @@
     />
   </head>
   <body>
-    <div class="d-flex flex-column align-items-center">
-    <h1 class="p-3">Multiple Choice Quiz/Survey</h1>
-    <div id="quiz">
+    <div id="entireQuiz" class="flex-column align-items-center">
+      <h1 class="p-3">Multiple Choice Quiz/Survey</h1>
+      <div id="quiz">
         <div class="question"></div>
         <div class="answers"></div>
+      </div>
+      <div>
+        <button id="start" class="button">Start Quiz/Survey</button>
+        <button id="back" class="button">Back</button>
+        <button id="next" class="button">Next</button>
+        <button id="submit" class="button">Submit</button>
+      </div>
     </div>
-    <div>
-    <button id="start">Start Quiz/Survey</button>
-      <button id="back">Back</button>
-      <button id="next">Next</button>
-      <button id="submit">Submit</button>
-    </div>
-    <div id="results">
-        <p>results go here</p>
+    <!-- div id entireQuiz, which doesn't include the results-->
+    <div
+      id="results"
+      class="flex-column align-items-center"
+      style="display: flex"
+    >
+      <p>Thank you for your submission</p>
+      <p class="addedScore"></p>
     </div>
   </body>
 </html>

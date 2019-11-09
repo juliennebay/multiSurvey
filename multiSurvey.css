@@ -1,1 +1,18 @@
 /* multiSurvey.css */
+#results {
+  margin: 20px;
+}
+
+.button {
+  height: 60px;
+  width: 100px;
+  margin-top: 10px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-family: "Verdana";
+  cursor: pointer;
+}
+
+#entireQuiz {
+  display: flex;
+}

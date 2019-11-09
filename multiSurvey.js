@@ -14,11 +14,13 @@ function loadScript() {
   //questions and answers stored in an array of objects
   const questions = [
     { text: "question 1", answers: ["answer 11", "answer 12", "answer 13"] },
-    { text: "question 2", answers: ["answer 21", "answer 22"] },
-    { text: "question 3", answers: ["answer 31", "answer 32"] }
+    { text: "question 2", answers: ["answer 21", "answer 22", "answer 23"] },
+    { text: "question 3", answers: ["answer 31", "answer 32", "answer 33"] }
   ];
-  //this will tally up the score
+  //the index of questions (determines which questions/buttons will be shown)
   let index = 0;
+  let quizAnswers = {}; // {0: 2, 1: 0, ...} the key is the index of the question.
+  //the value is the index of the answer in the answer array
   function drawQuestion() {
     const question = questions[index];
     const questionContainer = document.querySelector(".question");
@@ -41,6 +43,15 @@ function loadScript() {
       radioElement.setAttribute("type", "radio");
       radioElement.setAttribute("name", "answer");
       const label = document.createElement("label");
+      //the e.target below is the input that just got clicked
+      radioElement.addEventListener("click", e => {
+        //the next element sibling is label (which shares the same parent as the input)
+        const selectedAnswerText = e.target.nextElementSibling.textContent;
+        const selectedAnswerScore = questions[index].answers.indexOf(
+          selectedAnswerText
+        );
+        quizAnswers[index] = selectedAnswerScore;
+      });
       label.textContent = a;
       container.appendChild(radioElement);
       container.appendChild(label);
@@ -86,6 +97,17 @@ function loadScript() {
       submitButton.hidden = false;
     }
     drawQuestion();
+  });
+
+  submitButton.addEventListener("click", () => {
+    const entireQuiz = document.querySelector("#entireQuiz");
+    entireQuiz.hidden = true;
+    resultContainer.hidden = false;
+    const score = Object.values(quizAnswers).reduce((a, b) => a + b, 0);
+    //resultContainer.textContent = JSON.stringify(quizAnswers);
+    document.querySelector(
+      ".addedScore"
+    ).textContent = `Your score is ${score}`;
   });
 }
 document.addEventListener("DOMContentLoaded", loadScript);
