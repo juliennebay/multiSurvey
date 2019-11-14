@@ -42,6 +42,7 @@ function loadScript() {
       const radioElement = document.createElement("input");
       radioElement.setAttribute("type", "radio");
       radioElement.setAttribute("name", "answer");
+      radioElement.classList.add("radioElement");
       const label = document.createElement("label");
       //the e.target below is the input that just got clicked
       radioElement.addEventListener("click", e => {
@@ -66,16 +67,21 @@ function loadScript() {
   });
 
   nextButton.addEventListener("click", () => {
-    index++;
-    if (index > 0 && index < questions.length - 1) {
-      backButton.hidden = false;
-    }
+    const radioElements = document.querySelectorAll(".radioElement");
+    if (Array.from(radioElements).some(e => e.checked)) {
+      index++;
+      if (index > 0 && index < questions.length - 1) {
+        backButton.hidden = false;
+      }
 
-    if (index === questions.length - 1) {
-      nextButton.hidden = true;
-      submitButton.hidden = false;
+      if (index === questions.length - 1) {
+        nextButton.hidden = true;
+        submitButton.hidden = false;
+      }
+      drawQuestion();
+    } else {
+      alert("Just pick one");
     }
-    drawQuestion();
   });
 
   backButton.addEventListener("click", () => {
@@ -100,14 +106,18 @@ function loadScript() {
   });
 
   submitButton.addEventListener("click", () => {
-    const entireQuiz = document.querySelector("#entireQuiz");
-    entireQuiz.hidden = true;
-    resultContainer.hidden = false;
-    const score = Object.values(quizAnswers).reduce((a, b) => a + b, 0);
-    //resultContainer.textContent = JSON.stringify(quizAnswers);
-    document.querySelector(
-      ".addedScore"
-    ).textContent = `Your score is ${score}`;
+    const radioElements = document.querySelectorAll(".radioElement");
+    if (Array.from(radioElements).some(e => e.checked)) {
+      const entireQuiz = document.querySelector("#entireQuiz");
+      entireQuiz.hidden = true;
+      resultContainer.hidden = false;
+      const score = Object.values(quizAnswers).reduce((a, b) => a + b, 0);
+      document.querySelector(
+        ".addedScore"
+      ).textContent = `Your score is ${score}`;
+    } else {
+      alert("Just pick one");
+    }
   });
 }
 document.addEventListener("DOMContentLoaded", loadScript);
