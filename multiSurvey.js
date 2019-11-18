@@ -10,7 +10,6 @@ function loadScript() {
   backButton.hidden = true;
   nextButton.hidden = true;
   submitButton.hidden = true;
-
   //questions and answers stored in an array of objects
   const questions = [
     { text: "question 1", answers: ["answer 11", "answer 12", "answer 13"] },
@@ -18,11 +17,23 @@ function loadScript() {
     { text: "question 3", answers: ["answer 31", "answer 32", "answer 33"] }
   ];
   //the index of questions (determines which questions/buttons will be shown)
-  let index = 0;
+  // let index = 0;
   let quizAnswers = {}; // {0: 2, 1: 0, ...} the key is the index of the question.
   //the value is the index of the answer in the answer array
+  function index() {
+    return Number(window.location.href.replace(/.*\//, "")) - 1;
+  }
+  //if the index is defined in the link, then draw question according to index
+  if (index() >= 0) {
+    drawQuestion();
+    startButton.hidden = true;
+    nextButton.hidden = false;
+    if (index() !== 0) {
+      backButton.hidden = false;
+    }
+  }
   function drawQuestion() {
-    const question = questions[index];
+    const question = questions[index()];
     const questionContainer = document.querySelector(".question");
     //clear old questions
     Array.from(questionContainer.children).forEach(child => child.remove());
@@ -48,10 +59,10 @@ function loadScript() {
       radioElement.addEventListener("click", e => {
         //the next element sibling is label (which shares the same parent as the input)
         const selectedAnswerText = e.target.nextElementSibling.textContent;
-        const selectedAnswerScore = questions[index].answers.indexOf(
+        const selectedAnswerScore = questions[index()].answers.indexOf(
           selectedAnswerText
         );
-        quizAnswers[index] = selectedAnswerScore;
+        quizAnswers[index()] = selectedAnswerScore;
       });
       label.textContent = a;
       container.appendChild(radioElement);
