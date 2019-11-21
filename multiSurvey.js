@@ -22,6 +22,7 @@ function loadScript() {
   //the value is the index of the answer in the answer array
   function index() {
     return Number(window.location.href.replace(/.*\//, "")) - 1;
+    //it has to be "-1" because index starts from 0
   }
   //if the index is defined in the link, then draw question according to index
   if (index() >= 0) {
@@ -31,7 +32,12 @@ function loadScript() {
     if (index() !== 0) {
       backButton.hidden = false;
     }
+    if (index() === questions.length - 1) {
+      submitButton.hidden = false;
+      nextButton.hidden = true;
+    }
   }
+
   function drawQuestion() {
     const question = questions[index()];
     const questionContainer = document.querySelector(".question");
@@ -44,6 +50,21 @@ function loadScript() {
     Array.from(answerContainer.children).forEach(child => child.remove());
     const answers = question.answers;
     drawAnswers(answers);
+
+    if (index() >= 0) {
+      startButton.hidden = true;
+      nextButton.hidden = false;
+      submitButton.hidden = true;
+      backButton.hidden = true;
+      if (index() !== 0) {
+        backButton.hidden = false;
+        submitButton.hidden = true;
+      }
+      if (index() === questions.length - 1) {
+        submitButton.hidden = false;
+        nextButton.hidden = true;
+      }
+    }
   }
   function drawAnswers(answers) {
     const answerContainer = document.querySelector(".answers");
@@ -56,6 +77,7 @@ function loadScript() {
       radioElement.classList.add("radioElement");
       const label = document.createElement("label");
       //the e.target below is the input that just got clicked
+      label.textContent = a;
       radioElement.addEventListener("click", e => {
         //the next element sibling is label (which shares the same parent as the input)
         const selectedAnswerText = e.target.nextElementSibling.textContent;
@@ -64,7 +86,6 @@ function loadScript() {
         );
         quizAnswers[index()] = selectedAnswerScore;
       });
-      label.textContent = a;
       container.appendChild(radioElement);
       container.appendChild(label);
       answerContainer.appendChild(container);
@@ -72,23 +93,23 @@ function loadScript() {
   }
 
   startButton.addEventListener("click", () => {
-    startButton.hidden = true;
-    nextButton.hidden = false;
+    //drawQuestion();
+    window.history.pushState({}, "", `${window.location.origin}/1`);
+    //window.location.reload();
     drawQuestion();
   });
 
   nextButton.addEventListener("click", () => {
     const radioElements = document.querySelectorAll(".radioElement");
     if (Array.from(radioElements).some(e => e.checked)) {
-      index++;
-      if (index > 0 && index < questions.length - 1) {
-        backButton.hidden = false;
-      }
-
-      if (index === questions.length - 1) {
-        nextButton.hidden = true;
-        submitButton.hidden = false;
-      }
+      let nextPageNumber = index() + 2;
+      let nextIndex = index() + 1;
+      window.history.pushState(
+        {},
+        "",
+        `${window.location.origin}/${nextPageNumber}`
+      );
+      //window.location.reload();
       drawQuestion();
     } else {
       alert("Just pick one");
@@ -96,23 +117,14 @@ function loadScript() {
   });
 
   backButton.addEventListener("click", () => {
-    index--;
-    if (index === 0) {
-      backButton.hidden = true;
-      submitButton.hidden = true;
-      nextButton.hidden = false;
-    }
-    if (index > 0 && index < questions.length - 1) {
-      backButton.hidden = false;
-      submitButton.hidden = true;
-      nextButton.hidden = false;
-    }
-
-    if (index === questions.length - 1) {
-      nextButton.hidden = true;
-      backButton.hidden = false;
-      submitButton.hidden = false;
-    }
+    let previousPageNumber = index();
+    let previousIndex = index() - 1;
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.origin}/${previousPageNumber}`
+    );
+    //window.location.reload();
     drawQuestion();
   });
 
@@ -126,9 +138,15 @@ function loadScript() {
       document.querySelector(
         ".addedScore"
       ).textContent = `Your score is ${score}`;
+      window.history.pushState({}, "", `${window.location.origin}/complete`);
     } else {
       alert("Just pick one");
     }
   });
+
+  /*
+   * @see: https://developer.mozilla.org/en-US/docs/Web/API/PopStateEvent
+   */
+  window.onpopstate = () => drawQuestion();
 }
 document.addEventListener("DOMContentLoaded", loadScript);
