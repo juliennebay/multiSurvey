@@ -16,8 +16,6 @@ function loadScript() {
     { text: "question 2", answers: ["answer 21", "answer 22", "answer 23"] },
     { text: "question 3", answers: ["answer 31", "answer 32", "answer 33"] }
   ];
-  //the index of questions (determines which questions/buttons will be shown)
-  // let index = 0;
   let quizAnswers = {}; // {0: 2, 1: 0, ...} the key is the index of the question.
   //the value is the index of the answer in the answer array
   function index() {
@@ -27,19 +25,16 @@ function loadScript() {
   //if the index is defined in the link, then draw question according to index
   if (index() >= 0) {
     drawQuestion();
-    startButton.hidden = true;
-    nextButton.hidden = false;
-    if (index() !== 0) {
-      backButton.hidden = false;
-    }
-    if (index() === questions.length - 1) {
-      submitButton.hidden = false;
-      nextButton.hidden = true;
-    }
   }
 
   function drawQuestion() {
     const question = questions[index()];
+    const entireQuiz = document.querySelector("#entireQuiz");
+    //need to reload after submitting quiz, because submitting quiz hides the quiz
+    //reloading reverts the hidden quiz to its default visible state
+    if (entireQuiz.hidden === true) {
+      window.location.reload();
+    }
     const questionContainer = document.querySelector(".question");
     //clear old questions
     Array.from(questionContainer.children).forEach(child => child.remove());
@@ -66,14 +61,21 @@ function loadScript() {
       }
     }
   }
+
   function drawAnswers(answers) {
     const answerContainer = document.querySelector(".answers");
     //this (below) draws the answers
-    answers.forEach(a => {
+    answers.forEach((a, answerIndex) => {
       const container = document.createElement("div");
       const radioElement = document.createElement("input");
       radioElement.setAttribute("type", "radio");
       radioElement.setAttribute("name", "answer");
+      //this ensures the answer is saved after going back/forward on browser
+      const isChecked = quizAnswers[index()] === answerIndex;
+      if (isChecked) {
+        radioElement.setAttribute("checked", isChecked);
+      }
+
       radioElement.classList.add("radioElement");
       const label = document.createElement("label");
       //the e.target below is the input that just got clicked
@@ -93,9 +95,7 @@ function loadScript() {
   }
 
   startButton.addEventListener("click", () => {
-    //drawQuestion();
     window.history.pushState({}, "", `${window.location.origin}/1`);
-    //window.location.reload();
     drawQuestion();
   });
 
@@ -109,7 +109,6 @@ function loadScript() {
         "",
         `${window.location.origin}/${nextPageNumber}`
       );
-      //window.location.reload();
       drawQuestion();
     } else {
       alert("Just pick one");
@@ -124,7 +123,6 @@ function loadScript() {
       "",
       `${window.location.origin}/${previousPageNumber}`
     );
-    //window.location.reload();
     drawQuestion();
   });
 
@@ -143,10 +141,8 @@ function loadScript() {
       alert("Just pick one");
     }
   });
-
-  /*
-   * @see: https://developer.mozilla.org/en-US/docs/Web/API/PopStateEvent
-   */
-  window.onpopstate = () => drawQuestion();
+  window.onpopstate = e => {
+    drawQuestion();
+  };
 }
 document.addEventListener("DOMContentLoaded", loadScript);
