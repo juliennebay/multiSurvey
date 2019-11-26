@@ -19,4 +19,4 @@ const server = http.createServer((request, response) => {
   response.end(responseContent, "utf-8");
 });
 
-server.listen(3000);
+server.listen(process.env.PORT || 3000);
